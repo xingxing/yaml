@@ -180,9 +180,9 @@ func unmarshalEqual(t *testing.T, y []byte, s, e interface{}, opts ...JSONOpt) {
 // TestUnmarshalStrict tests that we return an error on ambiguous YAML.
 func TestUnmarshalStrict(t *testing.T) {
 	for _, tc := range []struct {
-		yaml        []byte
-		want        UnmarshalString
-		wantErr     string
+		yaml    []byte
+		want    UnmarshalString
+		wantErr string
 	}{
 		{
 			yaml: []byte("a: 1"),
@@ -200,18 +200,18 @@ func TestUnmarshalStrict(t *testing.T) {
 		},
 		{
 			// Declaring `a` twice produces an error.
-			yaml:        []byte("a: 1\na: 2"),
-			wantErr:     `key "a" already set in map`,
+			yaml:    []byte("a: 1\na: 2"),
+			wantErr: `key "a" already set in map`,
 		},
 		{
 			// Not ignoring first declaration of A with wrong type.
-			yaml:        []byte("a: [1,2,3]\na: value-of-a"),
-			wantErr:     `key "a" already set in map`,
+			yaml:    []byte("a: [1,2,3]\na: value-of-a"),
+			wantErr: `key "a" already set in map`,
 		},
 		{
 			// Declaring field `true` twice.
-			yaml:        []byte("true: string-value-of-yes\ntrue: 1"),
-			wantErr:     `key true already set in map`,
+			yaml:    []byte("true: string-value-of-yes\ntrue: 1"),
+			wantErr: `key true already set in map`,
 		},
 		{
 			// In YAML, `YES` is a Boolean true.
@@ -338,6 +338,22 @@ func TestYAMLToJSON(t *testing.T) {
 			"- t: null\n",
 			`[{"t":null}]`,
 			nil,
+		}, {
+			"skipPublished: \"true\"\n",
+			`{"skipPublished":true}`,
+			nil,
+		}, {
+			"skipPublished: \"false\"\n",
+			`{"skipPublished":false}`,
+			nil,
+		}, {
+			"skipPublished: true\n",
+			`{"skipPublished":true}`,
+			nil,
+		}, {
+			"skipPublished: false\n",
+			`{"skipPublished":false}`,
+			nil,
 		},
 	}
 
@@ -403,7 +419,7 @@ func runCases(t *testing.T, runType RunType, cases []Case) {
 
 		// Check the reverse is equal to the input (or to *c.reverse).
 		if string(input) != reverse {
-			t.Errorf("Failed to convert %s, input: `%s`, expected `%s`, got `%s`",
+			qt.Errorf("Failed to convert %s, input: `%s`, expected `%s`, got `%s`",
 				invMsg, string(output), reverse, string(input))
 		}
 	}
